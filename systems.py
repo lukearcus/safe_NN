@@ -18,8 +18,13 @@ class __continuous_system(__base_system):
         x_0 = self.sample_init_state()
         if x_0.ndim > 1:
             x_0 = x_0.flatten()
-        traj = scipy.integrate.solve_ivp(self.get_derivative, (0, time_horizon), x_0)
-        return traj
+        traj = scipy.integrate.solve_ivp(self.get_derivative, (0, time_horizon), x_0, dense_output=True)
+        state_traj = traj["y"]
+        times = traj["t"]
+        import pdb; pdb.set_trace()
+        derivs = [self.get_derivative(time, state) for time, state in zip(times, state_traj.T)]
+
+        return times, state_traj, derivs
 
 class __discrete_system(__base_system):
     T = None
@@ -34,6 +39,7 @@ class __discrete_system(__base_system):
         traj = [x_0]
         for t in range(0, time_horizon, self.T):
             traj.append(self.get_next_state(t, traj[-1]))
+        
         return traj
 
 class uncontrolled_LTI(__continuous_system):
