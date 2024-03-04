@@ -21,7 +21,7 @@ class __continuous_system(__base_system):
         traj = scipy.integrate.solve_ivp(self.get_derivative, (0, time_horizon), x_0, dense_output=True)
         state_traj = traj["y"]
         times = traj["t"]
-        import pdb; pdb.set_trace()
+        # Following will NOT return true derivatives for trajectory when stochasticity is included
         derivs = [self.get_derivative(time, state) for time, state in zip(times, state_traj.T)]
 
         return times, state_traj, derivs
