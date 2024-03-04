@@ -13,7 +13,7 @@ device = (
 )
 
 model = models.get_simple_test()
-for i in range(10):
+for i in range(100):
     times, states, derivs = model.return_trajectory(10)
     
     net = networks.test_NN().to(device)
@@ -21,14 +21,14 @@ for i in range(10):
 
 states_leq_0 = 0
 derivs_geq_0 = 0
-x = np.arange(-2,2,0.1)
-y = np.arange(-2,2,0.1)
+x = np.arange(-2,2,0.01)
+y = np.arange(-2,2,0.01)
 X, Y = np.meshgrid(x, y)
 
 lyap = []
-for x in np.arange(-2,2,0.1):
+for x in np.arange(-2,2,0.01):
     lyap_x = []
-    for y in np.arange(-2,2,0.1):
+    for y in np.arange(-2,2,0.01):
         state = np.array([x,y])
         deriv = model.get_derivative(0,state)
         state, deriv = torch.from_numpy(state), torch.from_numpy(np.array(deriv))
