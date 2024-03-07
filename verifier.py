@@ -2,8 +2,27 @@ import torch
 import numpy as np
 from math import comb
 from scipy.stats import beta as betaF
+CONVERGE_TOL = 1e-4
 
-def verify(data, network, device):
+def MC_test_lyap(num_samples, network, device, model):
+    num_violations = 0
+    converge_violations = 0
+    for i in range(num_samples):
+        times, states, derivs = model.return_trajectory(10)
+        final_state = states.T[-1]
+        if np.linalg.norm(final_state) > CONVERGE_TOL:
+            converge_violations += 1
+        states, derivs = np.vstack(states), np.vstack(derivs) 
+        state, deriv = torch.from_numpy(states.T), torch.from_numpy(np.array(derivs))
+        state, deriv = state.to(device, dtype=torch.float32), deriv.to(device, dtype=torch.float32)
+        pred_V = network(state)
+        pred_V_deriv = network.get_deriv(state,deriv) 
+        
+        if any(pred_V < 0) or any(pred_V_deriv > 0):
+            num_violations += 1
+    return num_violations/num_samples, converge_violations/num_samples
+
+def verify_lyap(data, network, device, beta):
     size = len(data)
     num_violations = 0
     for batch, traj in enumerate(data):
@@ -12,14 +31,11 @@ def verify(data, network, device):
         state, deriv = torch.from_numpy(states.T), torch.from_numpy(np.array(derivs))
         state, deriv = state.to(device, dtype=torch.float32), deriv.to(device, dtype=torch.float32)
 
-        tau = 1
-
         pred_V = network(state)
         pred_V_deriv = network.get_deriv(state,deriv) 
         
         if any(pred_V < 0) or any(pred_V_deriv > 0):
             num_violations += 1
-    beta = 1e-5
     eps = calc_eps_risk_complexity(beta, size, num_violations)
     return eps
 

@@ -20,6 +20,8 @@ num_traj = 100
 training_loops_per_run = 10
 max_eps = 0.1
 TimeOut = 120
+empirical_samples = 1000
+beta = 1e-5
 model = models.get_simple_test()
 
 start_time = time.perf_counter()
@@ -34,14 +36,17 @@ while time.perf_counter() - start_time < TimeOut:
     for k in tqdm(range(training_loops_per_run)):
         trainer.train_lyap(trajectories, net, device)
     
-    eps = verifier.verify(trajectories, net, device)
+    eps = verifier.verify_lyap(trajectories, net, device, beta)
     if eps < max_eps:
         break
     num_traj *= 2
 if eps > max_eps:
     print("Timed out")
-print(eps)
-import pdb; pdb.set_trace()
+empirical_eps, converge_eps = verifier.MC_test_lyap(empirical_samples, net, device, model)
+print(("Calculated upper bound on violation probability (with confidence {:.3f}: {:.3f}\n" + 
+        "Empirical violation rate of lyapunov function: {:.3f}\n" +
+        "Empirical rate of non-converged trajectories: {:.3f}")
+        .format(beta, eps, empirical_eps, converge_eps))
 
 states_leq_0 = 0
 derivs_geq_0 = 0
@@ -65,10 +70,8 @@ for x in np.arange(-2,2,0.01):
         if lyap_deriv > 0:
             derivs_geq_0 += 1
     lyap.append(lyap_x)
-import pdb; pdb.set_trace()
 fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
 surf = ax.plot_surface(X, Y, np.array(lyap))
 plt.savefig("test")
-import pdb; pdb.set_trace()
 #print(traj)
 #plt.plot(traj["t"], traj["y"][0])
