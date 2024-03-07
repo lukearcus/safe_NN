@@ -6,6 +6,7 @@ import numpy as np
 import trainer
 import verifier
 from tqdm import tqdm
+import time
 
 device = (
     "cuda"
@@ -15,21 +16,30 @@ device = (
     else "cpu"
 )
 
-num_traj = 1000
-training_loops = 10
-
+num_traj = 100
+training_loops_per_run = 10
+max_eps = 0.1
+TimeOut = 120
 model = models.get_simple_test()
+
+start_time = time.perf_counter()
 trajectories = []
+while time.perf_counter() - start_time < TimeOut:
 
-for i in range(num_traj):
-    times, states, derivs = model.return_trajectory(10)
-    trajectories.append((states, derivs))
-
-net = networks.test_NN().to(device)
-for k in tqdm(range(training_loops)):
-    trainer.train_lyap(trajectories, net, device)
-
-eps = verifier.verify(trajectories, net, device)
+    for i in range(num_traj):
+        times, states, derivs = model.return_trajectory(10)
+        trajectories.append((states, derivs))
+    
+    net = networks.test_NN().to(device)
+    for k in tqdm(range(training_loops_per_run)):
+        trainer.train_lyap(trajectories, net, device)
+    
+    eps = verifier.verify(trajectories, net, device)
+    if eps < max_eps:
+        break
+    num_traj *= 2
+if eps > max_eps:
+    print("Timed out")
 print(eps)
 import pdb; pdb.set_trace()
 
