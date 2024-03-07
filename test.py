@@ -3,6 +3,9 @@ import networks
 import matplotlib.pyplot as plt
 import torch
 import numpy as np
+import trainer
+import verifier
+from tqdm import tqdm
 
 device = (
     "cuda"
@@ -12,12 +15,23 @@ device = (
     else "cpu"
 )
 
+num_traj = 1000
+training_loops = 10
+
 model = models.get_simple_test()
-for i in range(100):
+trajectories = []
+
+for i in range(num_traj):
     times, states, derivs = model.return_trajectory(10)
-    
-    net = networks.test_NN().to(device)
-    networks.train_lyap(list(zip(states.T, derivs)), net, device)
+    trajectories.append((states, derivs))
+
+net = networks.test_NN().to(device)
+for k in tqdm(range(training_loops)):
+    trainer.train_lyap(trajectories, net, device)
+
+eps = verifier.verify(trajectories, net, device)
+print(eps)
+import pdb; pdb.set_trace()
 
 states_leq_0 = 0
 derivs_geq_0 = 0

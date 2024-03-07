@@ -1,0 +1,80 @@
+import torch
+import numpy as np
+from math import comb
+from scipy.stats import beta as betaF
+
+def verify(data, network, device):
+    size = len(data)
+    num_violations = 0
+    for batch, traj in enumerate(data):
+        states = np.vstack(traj[0])
+        derivs = np.vstack(traj[1])
+        state, deriv = torch.from_numpy(states.T), torch.from_numpy(np.array(derivs))
+        state, deriv = state.to(device, dtype=torch.float32), deriv.to(device, dtype=torch.float32)
+
+        tau = 1
+
+        pred_V = network(state)
+        pred_V_deriv = network.get_deriv(state,deriv) 
+        
+        if any(pred_V < 0) or any(pred_V_deriv > 0):
+            num_violations += 1
+    beta = 1e-5
+    import pdb; pdb.set_trace()
+    eps = calc_eps_risk_complexity(beta, size, num_violations)
+    return eps
+
+def calc_eps_risk_complexity(beta, N, k):
+    alphaL = betaF.ppf(beta, k, N-k+1)
+    alphaU = 1-betaF.ppf(beta, N-k+1, k)
+
+    m1 = np.expand_dims(np.arange(k, N+1),0)
+    #m1[0,0] = k+1
+    aux1 = np.sum(np.triu(np.log(np.ones([N-k+1,1])@m1),1),1)
+    aux2 = np.sum(np.triu(np.log(np.ones([N-k+1,1])@(m1-k)),1),1)
+    coeffs1 = np.expand_dims(aux2-aux1, 1)
+
+    m2 = np.expand_dims(np.arange(N+1, 4*N+1),0)
+    aux3 = np.sum(np.tril(np.log(np.ones([3*N,1])@m2)),1)
+    aux4 = np.sum(np.tril(np.log(np.ones([3*N,1])@(m2-k))),1)
+    coeffs2 = np.expand_dims(aux3-aux4, 1)
+
+    def poly(t):
+        val = 1
+        val += beta/(2*N) 
+        val -= (beta/(2*N))*np.sum(np.exp(coeffs1 - (N-m1.T)*np.log(t)))
+        val -=(beta/(6*N))*np.sum(np.exp(coeffs2 + (m2.T-N)*np.log(t)))
+
+        
+        return val
+    t1 = 1-alphaL
+    t2 = 1
+    poly1 = poly(t1)
+    poly2 = poly(t2)
+
+
+    if ((poly1*poly2)) > 0:
+        epsL = 0
+    else:
+        while t2-t1 > 10**-10:
+            t = (t1+t2)/2
+            polyt  = poly(t)
+            if polyt > 0:
+                t1 = t
+            else:
+                t2 = t
+        epsL = 1-t2
+
+    t1 = 0
+    t2 = 1-alphaU
+
+    while t2-t1 > 10**-10:
+        t = (t1+t2)/2
+        polyt  = poly(t)
+        if polyt > 0:
+            t2 = t
+        else:
+            t1 = t
+    epsU = 1-t1
+    import pdb; pdb.set_trace() 
+    return epsL, epsU
