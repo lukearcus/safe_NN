@@ -7,6 +7,7 @@ import trainer
 import verifier
 from tqdm import tqdm
 import time
+import pickle
 
 device = (
     "cuda"
@@ -24,24 +25,31 @@ empirical_samples = 1000
 beta = 1e-5
 model = models.get_simple_test()
 
-start_time = time.perf_counter()
-trajectories = []
-while time.perf_counter() - start_time < TimeOut:
+with open("trajectory_data.pkl", 'rb') as f:
+    data = pickle.load(f)
 
-    for i in range(num_traj):
-        times, states, derivs = model.return_trajectory(10)
-        trajectories.append((states, derivs))
-    
-    net = networks.test_NN().to(device)
-    for k in tqdm(range(training_loops_per_run)):
-        trainer.train_lyap(trajectories, net, device)
-    
-    eps = verifier.verify_lyap(trajectories, net, device, beta)
-    if eps < max_eps:
-        break
-    num_traj *= 2
-if eps > max_eps:
-    print("Timed out")
+trajectories = data
+
+net = networks.test_NN().to(device)
+for k in tqdm(range(training_loops_per_run)):
+    trainer.train_lyap(trajectories, net, device)           #start_time = time.perf_counter()
+                                                            #trajectories = []
+eps = verifier.verify_lyap(trajectories, net, device, beta) #while time.perf_counter() - start_time < TimeOut:
+#
+#    for i in range(num_traj):
+#        times, states, derivs = model.return_trajectory(10)
+#        trajectories.append((states, derivs))
+#    
+#    net = networks.test_NN().to(device)
+#    for k in tqdm(range(training_loops_per_run)):
+#        trainer.train_lyap(trajectories, net, device)
+#    
+#    eps = verifier.verify_lyap(trajectories, net, device, beta)
+#    if eps < max_eps:
+#        break
+#    num_traj *= 2
+#if eps > max_eps:
+#    print("Timed out")
 empirical_eps, converge_eps = verifier.MC_test_lyap(empirical_samples, net, device, model)
 print(("Calculated upper bound on violation probability (with confidence {:.3f}: {:.3f}\n" + 
         "Empirical violation rate of lyapunov function: {:.3f}\n" +

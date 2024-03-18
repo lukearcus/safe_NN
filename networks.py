@@ -9,7 +9,7 @@ class test_NN(nn.Module):
     
 
         self.flatten = nn.Flatten()
-        self.linear_relu_stack = nn.Sequential(
+        self.linear_tanh_stack = nn.Sequential(
             nn.Linear(2, 8),
             nn.Tanh(),
             nn.Linear(8, 8),
@@ -17,11 +17,18 @@ class test_NN(nn.Module):
             nn.Linear(8, 1),
             #nn.ReLU()
         )
+        def init_weights(m):
+            if isinstance(m, nn.Linear):
+                #torch.nn.init.xavier_uniform(m.weight)
+                m.weight.data.fill_(0.01)
+                m.bias.data.fill_(0.01)
+        self.linear_tanh_stack.apply(init_weights)
 
     def forward(self, x):
         #x = self.flatten(x)
-        output = self.linear_relu_stack(x)
+        output = self.linear_tanh_stack(x)
         return output
+
 
     def get_deriv(self, x, deriv):
         S_clone = torch.clone(x).requires_grad_()
