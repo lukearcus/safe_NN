@@ -10,11 +10,11 @@ class test_NN(nn.Module):
 
         self.flatten = nn.Flatten()
         self.linear_relu_stack = nn.Sequential(
-            nn.Linear(2, 4),
-            nn.ReLU(),
-            nn.Linear(4, 4),
-            nn.ReLU(),
-            nn.Linear(4, 1),
+            nn.Linear(2, 8),
+            nn.Tanh(),
+            nn.Linear(8, 8),
+            nn.Tanh(),
+            nn.Linear(8, 1),
             #nn.ReLU()
         )
 
