@@ -9,6 +9,8 @@ from tqdm import tqdm
 import time
 import pickle
 
+torch.manual_seed(0)
+
 device = (
     "cuda"
     if torch.cuda.is_available()

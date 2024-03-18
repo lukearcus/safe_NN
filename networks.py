@@ -17,12 +17,12 @@ class test_NN(nn.Module):
             nn.Linear(8, 1),
             #nn.ReLU()
         )
-        def init_weights(m):
-            if isinstance(m, nn.Linear):
-                #torch.nn.init.xavier_uniform(m.weight)
-                m.weight.data.fill_(0.01)
-                m.bias.data.fill_(0.01)
-        self.linear_tanh_stack.apply(init_weights)
+        #def init_weights(m):
+        #    if isinstance(m, nn.Linear):
+        #        #torch.nn.init.xavier_uniform(m.weight)
+        #        m.weight.data.fill_(0.01)
+        #        m.bias.data.fill_(0.01)
+        #self.linear_tanh_stack.apply(init_weights)
 
     def forward(self, x):
         #x = self.flatten(x)
