@@ -17,7 +17,7 @@ device = (
 )
 
 num_traj = 100
-training_loops_per_run = 100
+training_loops_per_run = 1000
 max_eps = 0.1
 TimeOut = 120
 empirical_samples = 1000
