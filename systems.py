@@ -18,12 +18,12 @@ class __continuous_system(__base_system):
         x_0 = self.sample_init_state()
         if x_0.ndim > 1:
             x_0 = x_0.flatten()
-        traj = scipy.integrate.solve_ivp(self.get_derivative, (0, time_horizon), x_0, dense_output=True)
+        traj = scipy.integrate.solve_ivp(self.get_derivative, (0, time_horizon), x_0)
         state_traj = traj["y"]
         times = traj["t"]
         # Following will NOT return true derivatives for trajectory when stochasticity is included
         derivs = [self.get_derivative(time, state) for time, state in zip(times, state_traj.T)]
-
+        import pdb; pdb.set_trace()
         return times, state_traj, derivs
 
 class __discrete_system(__base_system):
@@ -55,3 +55,14 @@ class uncontrolled_LTI(__continuous_system):
         elif state.shape == (1,self.n_states):
             state = state.T
         return (self.A @ state).flatten()
+
+class uncontrolled_LTI_with_instability(uncontrolled_LTI):
+    def __init__(self, _A, init_state_distribution, instability_test_func):
+        super().__init__(_A, init_state_distribution)
+        self.test = instability_test_func
+
+    def get_derivative(self, time, state):
+        if self.test(time, state):
+            return 1e100*state/np.linalg.norm(state)
+        else:
+            return super().get_derivative(time, state)
