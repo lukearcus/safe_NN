@@ -32,7 +32,7 @@ with open("trajectory_data.pkl", 'rb') as f:
 
 trajectories = data
 
-net = networks.test_NN().to(device)
+net = networks.structural_lyapunov().to(device)
 for k in tqdm(range(training_loops_per_run)):
     trainer.train_lyap(trajectories, net, device)           #start_time = time.perf_counter()
                                                             #trajectories = []
