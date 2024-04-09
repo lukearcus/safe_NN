@@ -23,7 +23,6 @@ class __continuous_system(__base_system):
         times = traj["t"]
         # Following will NOT return true derivatives for trajectory when stochasticity is included
         derivs = [self.get_derivative(time, state) for time, state in zip(times, state_traj.T)]
-        import pdb; pdb.set_trace()
         return times, state_traj, derivs
 
 class __discrete_system(__base_system):
@@ -41,6 +40,20 @@ class __discrete_system(__base_system):
             traj.append(self.get_next_state(t, traj[-1]))
         
         return traj
+
+class uncontrolled_discrete_LTI(__discrete_system):
+    A = None
+    def __init__(self, _A, init_state_distribution):
+        self.A = _A
+        self.n_states = _A.shape[0]
+        self.sample_init_state = init_state_distribution
+
+    def get_next_state(self, time, state):
+        if state.ndim == 1:
+            state = np.expand_dims(state, axis=1)
+        elif state.shape == (1,self.n_states):
+            state = state.T
+        return (self.A @ state).flatten()
 
 class uncontrolled_LTI(__continuous_system):
     A = None
