@@ -20,7 +20,7 @@ device = (
 )
 
 num_traj = 100
-training_loops_per_run = 1000
+training_loops_per_run = 5000
 max_eps = 0.1
 TimeOut = 120
 empirical_samples = 1000
@@ -31,7 +31,7 @@ with open("trajectory_data.pkl", 'rb') as f:
     data = pickle.load(f)
 
 trajectories = data
-import pdb; pdb.set_trace()
+#import pdb; pdb.set_trace() #test repeatability, works as intended!
 #trajectories = trajectories[1:]
 net = networks.structural_lyapunov().to(device)
 for k in tqdm(range(training_loops_per_run)):
