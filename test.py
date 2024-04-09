@@ -31,7 +31,8 @@ with open("trajectory_data.pkl", 'rb') as f:
     data = pickle.load(f)
 
 trajectories = data
-
+import pdb; pdb.set_trace()
+#trajectories = trajectories[1:]
 net = networks.structural_lyapunov().to(device)
 for k in tqdm(range(training_loops_per_run)):
     trainer.train_lyap(trajectories, net, device)           #start_time = time.perf_counter()

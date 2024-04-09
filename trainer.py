@@ -6,6 +6,7 @@ def train_lyap(data, model, device):
     size = len(data)
     model.train()
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-2, weight_decay=1e-5)
+    max_val = None
     for batch, trajectory in enumerate(data):
         states = np.vstack(trajectory[0])
         derivs = np.vstack(trajectory[1])
@@ -20,13 +21,17 @@ def train_lyap(data, model, device):
         pred = model(state)
 
         pred_deriv = model.get_deriv(state,deriv) 
+        if max_val is not None:
+            max_val = torch.max(max_val,torch.max(torch.max((-pred+zero_val),(pred_deriv-tau))))
+        else:
+            max_val = torch.max(torch.max((-pred+zero_val),(pred_deriv-tau)))
         
-        softplus = nn.Softplus()
-        loss = torch.max(torch.max((-pred+zero_val),(pred_deriv-tau)))
-        # Backpropagation
-        loss.backward()
-        #loss.backward()
-        optimizer.step()
-        optimizer.zero_grad()
-        #if batch%5 == 4:
-            #print("batch {} of {} completed".format(batch+1, size))
+    loss = max_val
+    #loss = torch.max(torch.max((-pred+zero_val),(pred_deriv-tau)))
+    # Backpropagation
+    loss.backward()
+    #loss.backward()
+    optimizer.step()
+    optimizer.zero_grad()
+    #if batch%5 == 4:
+        #print("batch {} of {} completed".format(batch+1, size))

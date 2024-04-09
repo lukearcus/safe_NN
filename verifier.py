@@ -33,13 +33,13 @@ def verify_lyap(data, network, device, beta):
         pred_0 = network(torch.zeros_like(state))
         pred_V = network(state)
         pred_V_deriv = network.get_deriv(state,deriv) 
+        print(pred_V)
+        print(pred_V_deriv)
         
         if any(pred_V - pred_0 <= 0) or any(pred_V_deriv > 0):
             num_violations += 1
         else:
             print(batch)
-    print(pred_V)
-    print(pred_V_deriv)
     eps = calc_eps_risk_complexity(beta, size, num_violations)
     return eps
 
