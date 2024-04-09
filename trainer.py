@@ -14,7 +14,7 @@ def train_lyap(data, model, device):
         state, deriv = state.to(device, dtype=torch.float32), deriv.to(device, dtype=torch.float32)
         zeros = torch.zeros_like(state)
         zero_val = model(zeros)
-        tau = 1 
+        tau = 1e-3 
         #state.requires_grad = True
 
         # Compute prediction error
