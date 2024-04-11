@@ -43,6 +43,28 @@ def verify_lyap(data, network, device, beta):
     eps = calc_eps_risk_complexity(beta, size, num_violations)
     return eps
 
+def verify_disc_lyap(data, network, device, beta):
+    size = len(data)
+    num_violations = 0
+    for batch, traj in enumerate(data):
+        states = np.vstack(traj[0])
+        nexts = np.vstack(traj[1])
+        state, next_s = torch.from_numpy(states.T), torch.from_numpy(np.array(derivs))
+        state, next_s = state.to(device, dtype=torch.float32), deriv.to(device, dtype=torch.float32)
+        pred_0 = network(torch.zeros_like(state))
+        pred_V = network(state)
+        pred_next_V = network(next_s) 
+        pred_V_deriv = pred_next_V - pred_V
+        print(pred_V)
+        print(pred_V_deriv)
+        
+        if any(pred_V - pred_0 <= 0) or any(pred_V_deriv > 0):
+            num_violations += 1
+        else:
+            print(batch)
+    eps = calc_eps_risk_complexity(beta, size, num_violations)
+    return eps
+
 def calc_eps_risk_complexity(beta, N, k):
     if k != 0:
         alphaL = betaF.ppf(beta, k, N-k+1)

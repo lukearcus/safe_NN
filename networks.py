@@ -56,7 +56,9 @@ class structural_lyapunov(template_NN):
         self.forward_stack = nn.Sequential(
             nn.Linear(2, 8, bias=False),
             nn.Tanh(),
-            nn.Linear(8, 8, bias=False),
+            nn.Linear(8, 8, bias=False), # might nit be big enough?
+            nn.Tanh(),
+            nn.Linear(8, 8, bias=False), # might nit be big enough?
             nn.Tanh(),
             nn.Linear(8, 1, bias=False),
             nn.ReLU()

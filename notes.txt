@@ -1,0 +1,1 @@
+Might need a bigger NN to learn lyapunov, cxurrently learns basically linear?
