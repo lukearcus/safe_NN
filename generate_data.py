@@ -1,8 +1,8 @@
 import models
 import pickle
 
-num_traj = 100
-discrete = True
+num_traj = 500
+discrete = 0
 
 if not discrete:
     model = models.get_simple_test()

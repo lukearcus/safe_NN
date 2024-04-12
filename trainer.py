@@ -5,7 +5,7 @@ from torch import nn
 def train_lyap(data, model, device):
     size = len(data)
     model.train()
-    optimizer = torch.optim.SGD(model.parameters(), lr=1e-1, weight_decay=1e-5)
+    optimizer = torch.optim.SGD(model.parameters(), lr=1e-2, weight_decay=1e-5)
     max_val = None
     for batch, trajectory in enumerate(data):
         states = np.vstack(trajectory[0])

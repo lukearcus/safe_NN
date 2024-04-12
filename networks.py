@@ -37,6 +37,8 @@ class test_NN(template_NN):
             nn.Tanh(),
             nn.Linear(8, 8),
             nn.Tanh(),
+            nn.Linear(8, 8),
+            nn.Tanh(),
             nn.Linear(8, 1),
             #nn.ReLU()
         )
