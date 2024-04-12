@@ -8,7 +8,7 @@ if not discrete:
     model = models.get_simple_test()
     trajectories = []
     for i in range(num_traj):
-        times, states, derivs = model.return_trajectory(3)
+        times, states, derivs = model.return_trajectory(1)
         trajectories.append((states, derivs))
     
     with open("trajectory_data.pkl", 'wb') as f:
