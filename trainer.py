@@ -37,7 +37,6 @@ def train_lyap(data, model, device):
         #loss.backward()
         optimizer.step()
         optimizer.zero_grad()
-    print(loss)
     return max_val
     #if batch%5 == 4:
         #print("batch {} of {} completed".format(batch+1, size))
