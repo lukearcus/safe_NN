@@ -3,3 +3,7 @@ Might need a bigger NN to learn lyapunov, cxurrently learns basically linear?
 Maybe problem is that once it learns linear (at least for structural lyapunov) the part with 0 has a very small backward differential?
 
 Non-structural learns something quite nice but is somehow not quite there (ends up with all samples violating...)
+
+Repeatability fine for structural (which basically just learns a linear in 1 dimension), current problem with non-structural is that no samples aren't of support
+
+Next steps: start work on barrier certificates which should offer an easier problem

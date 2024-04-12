@@ -32,7 +32,7 @@ with open("trajectory_data.pkl", 'rb') as f:
 
 trajectories = data
 #import pdb; pdb.set_trace() #test repeatability, works as intended!
-#trajectories = trajectories[1:]
+trajectories = trajectories[:-1]
 net = networks.structural_lyapunov().to(device)
 #net = networks.test_NN().to(device)
 vals = []
