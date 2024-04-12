@@ -1,3 +1,5 @@
 Might need a bigger NN to learn lyapunov, cxurrently learns basically linear?
 
 Maybe problem is that once it learns linear (at least for structural lyapunov) the part with 0 has a very small backward differential?
+
+Non-structural learns something quite nice but is somehow not quite there (ends up with all samples violating...)

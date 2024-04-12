@@ -21,21 +21,22 @@ def train_lyap(data, model, device):
         pred = model(state)
 
         pred_deriv = model.get_deriv(state,deriv) 
-        if max_val is not None:
-            #max_val = torch.max(max_val, torch.max(pred_deriv))
-            max_val = torch.max(max_val,torch.max(torch.max((-pred+zero_val),(pred_deriv-tau))))
-        else:
-            #max_val = torch.max(pred_deriv)
-            max_val = torch.max(torch.max((-pred+zero_val),(pred_deriv-tau)))
-        
-    loss = max_val
-    #loss = torch.max(torch.max((-pred+zero_val),(pred_deriv-tau)))
-    # Backpropagation
-    loss.backward()
-    #loss.backward()
-    optimizer.step()
-    optimizer.zero_grad()
-    print(max_val)
+        #if max_val is not None:
+        #    #max_val = torch.max(max_val, torch.max(pred_deriv))
+        #    max_val = torch.max(max_val,torch.max(torch.max((-pred+zero_val),(pred_deriv-tau))))
+        #else:
+        #    #max_val = torch.max(pred_deriv)
+        #    max_val = torch.max(torch.max((-pred+zero_val),(pred_deriv-tau)))
+        #
+        #loss = max_val
+        # loss above is max_i, loss below is sum_i
+        loss = torch.max(torch.max(-pred+zero_val),torch.max(pred_deriv-tau))
+        # Backpropagation
+        loss.backward()
+        #loss.backward()
+        optimizer.step()
+        optimizer.zero_grad()
+    print(loss)
     return max_val
     #if batch%5 == 4:
         #print("batch {} of {} completed".format(batch+1, size))
