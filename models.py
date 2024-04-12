@@ -58,10 +58,10 @@ def discrete_test():
     Kf = 0.2 # Nms
     J= 0.02 # kg.m^2
 
-    A_mat =  np.matrix([[-R/L, -Kb/L],[Km/J, -Kf/J]])
+    A_mat = 0.5*np.eye(2)
 
     init_mean = np.zeros(2)
     init_cov = np.eye(2)
     init_dist = scipy.stats.multivariate_normal(init_mean, init_cov).rvs
 
-    return systems.uncontrolled_discrete_LTI(A_mat, init_dist)
+    return systems.uncontrolled_discrete_LTI(A_mat, init_dist, 0.1)

@@ -37,20 +37,23 @@ class __discrete_system(__base_system):
             x_0 = x_0.flatten()
         traj = [x_0]
         times = []
-        for t in range(0, time_horizon, self.T):
+        next_s = []
+        for t in np.arange(0, time_horizon, self.T):
             next_state = self.get_next_state(t, traj[-1])
             traj.append(next_state)
             times.append(t)
             next_s.append(next_state)
+        traj.pop(-1)
         return times, traj, next_s
 
 class uncontrolled_discrete_LTI(__discrete_system):
     A = None
-    def __init__(self, _A, init_state_distribution):
+    def __init__(self, _A, init_state_distribution, _T):
         self.A = _A
         self.n_states = _A.shape[0]
         self.sample_init_state = init_state_distribution
-
+        self.T = _T
+    
     def get_next_state(self, time, state):
         if state.ndim == 1:
             state = np.expand_dims(state, axis=1)

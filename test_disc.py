@@ -27,7 +27,7 @@ empirical_samples = 1000
 beta = 1e-5
 model = models.discrete_test()
 
-with open("trajectory_data.pkl", 'rb') as f:
+with open("disc_trajectory_data.pkl", 'rb') as f:
     data = pickle.load(f)
 
 trajectories = data

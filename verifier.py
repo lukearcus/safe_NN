@@ -28,11 +28,11 @@ def MC_test_disc_lyap(num_samples, network, device, model):
     converge_violations = 0
     for i in range(num_samples):
         times, states, nexts = model.return_trajectory(10)
-        final_state = states.T[-1]
+        final_state = states[-1]
         if np.linalg.norm(final_state) > CONVERGE_TOL:
             converge_violations += 1
-        states, nexts = np.vstack(states), np.vstack(derivs) 
-        state, next_s = torch.from_numpy(states.T), torch.from_numpy(np.array(nexts))
+        states, nexts = np.vstack(states), np.vstack(nexts) 
+        state, next_s = torch.from_numpy(states), torch.from_numpy(np.array(nexts))
         state, next_s = state.to(device, dtype=torch.float32), next_s.to(device, dtype=torch.float32)
         pred_V = network(state)
         pred_0 = network(torch.zeros_like(state))
@@ -69,7 +69,7 @@ def verify_disc_lyap(data, network, device, beta):
     for batch, traj in enumerate(data):
         states = np.vstack(traj[0])
         nexts = np.vstack(traj[1])
-        state, next_s = torch.from_numpy(states.T), torch.from_numpy(np.array(nexts))
+        state, next_s = torch.from_numpy(states), torch.from_numpy(np.array(nexts))
         state, next_s = state.to(device, dtype=torch.float32), next_s.to(device, dtype=torch.float32)
         pred_0 = network(torch.zeros_like(state))
         pred_V = network(state)
