@@ -30,7 +30,8 @@ def train_lyap(data, model, device):
         #
         #loss = max_val
         # loss above is max_i, loss below is sum_i
-        loss = torch.max(torch.max(-pred+zero_val),torch.max(pred_deriv-tau))
+        relu = torch.nn.ReLU()
+        loss = relu(torch.max(torch.max(-pred+zero_val),torch.max(pred_deriv-tau)))
         # Backpropagation
         loss.backward()
         #loss.backward()
