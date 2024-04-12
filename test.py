@@ -34,9 +34,12 @@ trajectories = data
 #import pdb; pdb.set_trace() #test repeatability, works as intended!
 #trajectories = trajectories[1:]
 net = networks.structural_lyapunov().to(device)
+vals = []
 for k in tqdm(range(training_loops_per_run)):
-    trainer.train_lyap(trajectories, net, device)           #start_time = time.perf_counter()
-                                                            #trajectories = []
+    val = trainer.train_lyap(trajectories, net, device)           #start_time = time.perf_counter()
+    vals.append(val)
+         #trajectories = []
+print(vals)
 eps = verifier.verify_lyap(trajectories, net, device, beta) #while time.perf_counter() - start_time < TimeOut:
 #
 #    for i in range(num_traj):

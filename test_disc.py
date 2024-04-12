@@ -20,7 +20,7 @@ device = (
 )
 
 num_traj = 100
-training_loops_per_run = 5000
+training_loops_per_run = 1000
 max_eps = 0.1
 TimeOut = 120
 empirical_samples = 1000
@@ -53,7 +53,7 @@ eps = verifier.verify_disc_lyap(trajectories, net, device, beta) #while time.per
 #    num_traj *= 2
 #if eps > max_eps:
 #    print("Timed out")
-empirical_eps, converge_eps = verifier.MC_test_lyap(empirical_samples, net, device, model)
+empirical_eps, converge_eps = verifier.MC_test_disc_lyap(empirical_samples, net, device, model)
 print(("Calculated upper bound on violation probability (with confidence {:.3f}: {:.3f}\n" + 
         "Empirical violation rate of lyapunov function: {:.3f}\n" +
         "Empirical rate of non-converged trajectories: {:.3f}")
@@ -83,6 +83,6 @@ for x in np.arange(-2,2,0.01):
     lyap.append(lyap_x)
 fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
 surf = ax.plot_surface(X, Y, np.array(lyap))
-plt.savefig("test")
+plt.savefig("fig_disc_test")
 #print(traj)
 #plt.plot(traj["t"], traj["y"][0])

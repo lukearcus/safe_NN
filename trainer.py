@@ -14,7 +14,7 @@ def train_lyap(data, model, device):
         state, deriv = state.to(device, dtype=torch.float32), deriv.to(device, dtype=torch.float32)
         zeros = torch.zeros_like(state)
         zero_val = model(zeros)
-        tau = 1e-3 
+        tau = 0 
         #state.requires_grad = True
 
         # Compute prediction error
@@ -33,6 +33,7 @@ def train_lyap(data, model, device):
     #loss.backward()
     optimizer.step()
     optimizer.zero_grad()
+    return max_val
     #if batch%5 == 4:
         #print("batch {} of {} completed".format(batch+1, size))
 
@@ -44,8 +45,8 @@ def train_disc_lyap(data, model, device):
     for batch, trajectory in enumerate(data):
         states = np.vstack(trajectory[0])
         next_states = np.vstack(trajectory[1])
-        state, next_s = torch.from_numpy(states.T), torch.from_numpy(np.array(derivs))
-        state, next_s = state.to(device, dtype=torch.float32), deriv.to(device, dtype=torch.float32)
+        state, next_s = torch.from_numpy(states.T), torch.from_numpy(np.array(next_states))
+        state, next_s = state.to(device, dtype=torch.float32), next_s.to(device, dtype=torch.float32)
         zeros = torch.zeros_like(state)
         zero_val = model(zeros)
         tau = 1e-3 

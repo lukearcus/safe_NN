@@ -16,9 +16,29 @@ def MC_test_lyap(num_samples, network, device, model):
         state, deriv = torch.from_numpy(states.T), torch.from_numpy(np.array(derivs))
         state, deriv = state.to(device, dtype=torch.float32), deriv.to(device, dtype=torch.float32)
         pred_V = network(state)
+        pred_0 = network(torch.zeros_like(state))
         pred_V_deriv = network.get_deriv(state,deriv) 
         
-        if any(pred_V < 0) or any(pred_V_deriv > 0):
+        if any(pred_V-pred_0 < 0) or any(pred_V_deriv > 0):
+            num_violations += 1
+    return num_violations/num_samples, converge_violations/num_samples
+
+def MC_test_disc_lyap(num_samples, network, device, model):
+    num_violations = 0
+    converge_violations = 0
+    for i in range(num_samples):
+        times, states, nexts = model.return_trajectory(10)
+        final_state = states.T[-1]
+        if np.linalg.norm(final_state) > CONVERGE_TOL:
+            converge_violations += 1
+        states, nexts = np.vstack(states), np.vstack(derivs) 
+        state, next_s = torch.from_numpy(states.T), torch.from_numpy(np.array(nexts))
+        state, next_s = state.to(device, dtype=torch.float32), next_s.to(device, dtype=torch.float32)
+        pred_V = network(state)
+        pred_0 = network(torch.zeros_like(state))
+        pred_V_deriv = network(next_s) - pred_V 
+        
+        if any(pred_V-pred_0 < 0) or any(pred_V_deriv > 0):
             num_violations += 1
     return num_violations/num_samples, converge_violations/num_samples
 
@@ -49,8 +69,8 @@ def verify_disc_lyap(data, network, device, beta):
     for batch, traj in enumerate(data):
         states = np.vstack(traj[0])
         nexts = np.vstack(traj[1])
-        state, next_s = torch.from_numpy(states.T), torch.from_numpy(np.array(derivs))
-        state, next_s = state.to(device, dtype=torch.float32), deriv.to(device, dtype=torch.float32)
+        state, next_s = torch.from_numpy(states.T), torch.from_numpy(np.array(nexts))
+        state, next_s = state.to(device, dtype=torch.float32), next_s.to(device, dtype=torch.float32)
         pred_0 = network(torch.zeros_like(state))
         pred_V = network(state)
         pred_next_V = network(next_s) 

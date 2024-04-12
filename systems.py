@@ -36,10 +36,13 @@ class __discrete_system(__base_system):
         if x_0.ndim > 1:
             x_0 = x_0.flatten()
         traj = [x_0]
+        times = []
         for t in range(0, time_horizon, self.T):
-            traj.append(self.get_next_state(t, traj[-1]))
-        
-        return traj
+            next_state = self.get_next_state(t, traj[-1])
+            traj.append(next_state)
+            times.append(t)
+            next_s.append(next_state)
+        return times, traj, next_s
 
 class uncontrolled_discrete_LTI(__discrete_system):
     A = None
