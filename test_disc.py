@@ -69,13 +69,13 @@ lyap = []
 for x in np.arange(-2,2,0.01):
     lyap_x = []
     for y in np.arange(-2,2,0.01):
-        state = np.array([x,y])
-        deriv = model.get_derivative(0,state)
-        state, deriv = torch.from_numpy(state), torch.from_numpy(np.array(deriv))
-        state, deriv = state.to(device, dtype=torch.float32), deriv.to(device, dtype=torch.float32)
+        state = np.array([x,y]).T
+        next_s = model.get_next_state(0,state)
+        state, next_s = torch.from_numpy(state), torch.from_numpy(np.array(next_s))
+        state, next_s = state.to(device, dtype=torch.float32), next_s.to(device, dtype=torch.float32)
         val = net(state)
         lyap_x.append(val.detach().item())
-        lyap_deriv = net.get_deriv(state, deriv)
+        lyap_deriv = net(next_s) - val
         if val < 0:
             states_leq_0 += 1
         if lyap_deriv > 0:
