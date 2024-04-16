@@ -16,7 +16,7 @@ def get_simple_test():
     init_mean = np.ones(2)
     init_cov = np.eye(2)
     init_dist = scipy.stats.multivariate_normal(init_mean, init_cov).rvs
-    traj_length = 2
+    traj_length = 1 
 
     return systems.uncontrolled_LTI(A_mat, init_dist, traj_length)
 
