@@ -39,6 +39,7 @@ net = networks.test_NN().to(device)
 #vals = []
 weights = np.copy(net.forward_stack[0].weight.detach().numpy()) 
 tol = 1e-5
+tol = 1e-2
 for i in range(max_runs):
     for k in tqdm(range(training_loops_per_run)):
         trainer.train_lyap(trajectories, net, device)           #start_time = time.perf_counter()
