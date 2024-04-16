@@ -21,6 +21,7 @@ device = (
 
 num_traj = 100
 training_loops_per_run = 100
+max_runs = 100
 max_eps = 0.1
 TimeOut = 120
 empirical_samples = 1000
@@ -36,12 +37,21 @@ trajectories = data
 #net = networks.structural_lyapunov().to(device)
 net = networks.test_NN().to(device)
 #vals = []
-for k in tqdm(range(training_loops_per_run)):
-    trainer.train_lyap(trajectories, net, device)           #start_time = time.perf_counter()
+weights = np.copy(net.forward_stack[0].weight.detach().numpy()) 
+tol = 1e-5
+for i in range(max_runs):
+    for k in tqdm(range(training_loops_per_run)):
+        trainer.train_lyap(trajectories, net, device)           #start_time = time.perf_counter()
+    new_weights = np.copy(net.forward_stack[0].weight.detach().numpy())
+    if np.linalg.norm(weights-new_weights) <= tol:
+        break
+    else:
+        print(np.linalg.norm(weights-new_weights))
+        weights = np.copy(new_weights)
     #vals.append(val)
          #trajectories = []
 #print(vals)
-import pdb; pdb.set_trace()
+
 eps = verifier.verify_lyap(trajectories, net, device, beta) #while time.perf_counter() - start_time < TimeOut:
 #
 #    for i in range(num_traj):

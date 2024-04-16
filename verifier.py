@@ -8,7 +8,7 @@ def MC_test_lyap(num_samples, network, device, model):
     num_violations = 0
     converge_violations = 0
     for i in range(num_samples):
-        times, states, derivs = model.return_trajectory(10)
+        times, states, derivs = model.return_trajectory()
         final_state = states.T[-1]
         if np.linalg.norm(final_state) > CONVERGE_TOL:
             converge_violations += 1
@@ -27,7 +27,7 @@ def MC_test_disc_lyap(num_samples, network, device, model):
     num_violations = 0
     converge_violations = 0
     for i in range(num_samples):
-        times, states, nexts = model.return_trajectory(10)
+        times, states, nexts = model.return_trajectory()
         final_state = states[-1]
         if np.linalg.norm(final_state) > CONVERGE_TOL:
             converge_violations += 1
@@ -53,8 +53,8 @@ def verify_lyap(data, network, device, beta):
         pred_0 = network(torch.zeros_like(state))
         pred_V = network(state)
         pred_V_deriv = network.get_deriv(state,deriv) 
-        print(pred_V)
-        print(pred_V_deriv)
+        #print(pred_V)
+        #print(pred_V_deriv)
         
         if any(pred_V - pred_0 <= 0) or any(pred_V_deriv > 0):
             num_violations += 1
