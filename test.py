@@ -21,7 +21,7 @@ device = (
 
 num_traj = 100
 training_loops_per_run = 100
-max_runs = 100
+max_runs = 100 
 max_eps = 0.1
 TimeOut = 120
 empirical_samples = 1000
@@ -38,8 +38,7 @@ trajectories = data
 net = networks.test_NN().to(device)
 #vals = []
 weights = np.copy(net.forward_stack[0].weight.detach().numpy()) 
-tol = 1e-5
-tol = 0.005 
+tol = 1e-4
 for i in range(max_runs):
     for k in tqdm(range(training_loops_per_run)):
         trainer.train_lyap(trajectories, net, device)           #start_time = time.perf_counter()

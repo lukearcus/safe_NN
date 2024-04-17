@@ -14,7 +14,7 @@ def train_lyap(data, model, device):
         state, deriv = state.to(device, dtype=torch.float32), deriv.to(device, dtype=torch.float32)
         zeros = torch.zeros_like(state)
         zero_val = model(zeros)
-        tau = 0 
+        tau = 1e-3
         #state.requires_grad = True
 
         # Compute prediction error
@@ -31,7 +31,7 @@ def train_lyap(data, model, device):
         #loss = max_val
         # loss above is max_i, loss below is sum_i
         relu = torch.nn.ReLU()
-        loss = relu(torch.max(torch.max(-pred+zero_val),torch.max(pred_deriv-tau)))
+        loss = relu(torch.max(torch.max(-pred+zero_val+tau),torch.max(pred_deriv)))
         # Backpropagation
         loss.backward()
         #loss.backward()

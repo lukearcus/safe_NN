@@ -63,5 +63,5 @@ class structural_lyapunov(template_NN):
             nn.Linear(8, 8, bias=False), # might nit be big enough?
             nn.Tanh(),
             nn.Linear(8, 1, bias=False),
-            nn.ReLU()
+            nn.ReLU() # Try quadratic output layer?
         )
