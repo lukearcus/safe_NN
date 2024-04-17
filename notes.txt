@@ -7,3 +7,7 @@ Non-structural learns something quite nice but is somehow not quite there (ends 
 Repeatability fine for structural (which basically just learns a linear in 1 dimension), current problem with non-structural is that no samples aren't of support
 
 Next steps: start work on barrier certificates which should offer an easier problem
+
+Non-structural broadly working, coming up against some time steps reaching minimum for all samples (when running until convergence check is 0.01)
+
+Think problem is that we want < 0, not <= 0, add small penalty back in (tau) which should fix this maybe
