@@ -56,10 +56,11 @@ def verify_lyap(data, network, device, beta):
         
         if any(pred_V - pred_0 <= 0) or any(pred_V_deriv > 0):
             num_violations += 1
-        else:
-            print(batch)
-    print(pred_V-pred_0)
-    print(pred_V_deriv)
+        #else:
+            #print(batch)
+    #print(pred_V-pred_0)
+    #print(pred_V_deriv)
+    print("{} violations".format(num_violations))
     eps = calc_eps_risk_complexity(beta, size, num_violations)
     return eps
 

@@ -20,7 +20,7 @@ device = (
 )
 
 num_traj = 100
-training_loops_per_run = 100
+training_loops_per_run = 10
 max_runs = 100 
 max_eps = 0.1
 TimeOut = 120
@@ -43,6 +43,8 @@ for i in range(max_runs):
     for k in tqdm(range(training_loops_per_run)):
         trainer.train_lyap(trajectories, net, device)           #start_time = time.perf_counter()
     new_weights = np.copy(net.forward_stack[0].weight.detach().numpy())
+    eps = verifier.verify_lyap(trajectories, net, device, beta) #while time.perf_counter() - start_time < TimeOut:
+    print("Epsilon in loop {}: {:.5f}".format(i, eps))
     if np.linalg.norm(weights-new_weights) <= tol:
         break
     else:
@@ -52,7 +54,6 @@ for i in range(max_runs):
          #trajectories = []
 #print(vals)
 
-eps = verifier.verify_lyap(trajectories, net, device, beta) #while time.perf_counter() - start_time < TimeOut:
 #
 #    for i in range(num_traj):
 #        times, states, derivs = model.return_trajectory(10)

@@ -5,7 +5,8 @@ from torch import nn
 def train_lyap(data, model, device):
     size = len(data)
     model.train()
-    optimizer = torch.optim.SGD(model.parameters(), lr=1e-2, weight_decay=1e-5)
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.1, weight_decay=1e-5)
+    optimizer.zero_grad()
     max_val = None
     for batch, trajectory in enumerate(data):
         states = np.vstack(trajectory[0])
@@ -14,7 +15,7 @@ def train_lyap(data, model, device):
         state, deriv = state.to(device, dtype=torch.float32), deriv.to(device, dtype=torch.float32)
         zeros = torch.zeros_like(state)
         zero_val = model(zeros)
-        tau = 1e-3
+        tau = 1e-10
         #state.requires_grad = True
 
         # Compute prediction error
@@ -31,7 +32,7 @@ def train_lyap(data, model, device):
         #loss = max_val
         # loss above is max_i, loss below is sum_i
         relu = torch.nn.ReLU()
-        loss = relu(torch.max(torch.max(-pred+zero_val+tau),torch.max(pred_deriv)))
+        loss = relu(tau+torch.max(torch.max(-pred+zero_val),torch.max(pred_deriv)))
         # Backpropagation
         loss.backward()
         #loss.backward()
