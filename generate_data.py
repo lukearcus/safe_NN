@@ -2,7 +2,7 @@ import models
 import pickle
 
 num_traj = 500
-discrete = 0
+discrete = 1 
 
 if not discrete:
     model = models.get_simple_test()

@@ -43,7 +43,7 @@ tau=0.5
 for i in range(max_runs):
     for k in tqdm(range(training_loops_per_run)):
         new_loss, num_violations = trainer.train_lyap(trajectories, net, device, tau)           #start_time = time.perf_counter()
-    tau /= 2
+    tau /= 1.1 
     print(new_loss)
     print(num_violations)
     eps = verifier.verify_lyap(trajectories, net, device, beta) #while time.perf_counter() - start_time < TimeOut:

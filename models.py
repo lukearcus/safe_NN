@@ -14,7 +14,7 @@ def get_simple_test():
     A_mat =  np.matrix([[-R/L, -Kb/L],[Km/J, -Kf/J]])
 
     init_mean = np.zeros(2)#5*np.ones(2)
-    init_cov = 5*np.eye(2)
+    init_cov = 15*np.eye(2)
     init_dist = scipy.stats.multivariate_normal(init_mean, init_cov).rvs
     traj_length = 1 
 
@@ -94,4 +94,6 @@ def discrete_test():
     init_cov = np.eye(2)
     init_dist = scipy.stats.multivariate_normal(init_mean, init_cov).rvs
 
-    return systems.uncontrolled_discrete_LTI(A_mat, init_dist, 0.1)
+    time_horizon = 2
+    
+    return systems.uncontrolled_discrete_LTI(A_mat, init_dist, 0.1, time_horizon)

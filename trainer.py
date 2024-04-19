@@ -62,6 +62,8 @@ def train_disc_lyap(data, model, device):
     model.train()
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-2, weight_decay=1e-5)
     max_val = None
+    total_loss = 0
+    num_violations = 0
     for batch, trajectory in enumerate(data):
         states = np.vstack(trajectory[0])
         next_states = np.vstack(trajectory[1])
@@ -78,18 +80,22 @@ def train_disc_lyap(data, model, device):
 
         #pred_deriv = model.get_deriv(state,deriv) 
         pred_deriv = pred_next-pred
+        eta_i = torch.max(torch.max(-pred+zero_val),torch.max(pred_deriv))+tau
+        if eta_i >= 0:
+            total_loss += eta_i-tau
+            if eta_i-tau >= 0:
+                num_violations += 1
+        #relu = torch.nn.ReLU()
 
-        if max_val is not None:
-            max_val = torch.max(max_val,torch.max(torch.max((-pred+zero_val),(pred_deriv-tau))))
-        else:
-            max_val = torch.max(torch.max((-pred+zero_val),(pred_deriv-tau)))
+        #loss = relu(tau+)-tau
+        #total_loss += loss
         
-    loss = max_val
-    #loss = torch.max(torch.max((-pred+zero_val),(pred_deriv-tau)))
-    # Backpropagation
-    loss.backward()
-    #loss.backward()
-    optimizer.step()
-    optimizer.zero_grad()
-    #if batch%5 == 4:
-        #print("batch {} of {} completed".format(batch+1, size))
+        # Backpropagation
+    #print(pred-zero_val)
+    #print(pred_deriv)
+    if type(total_loss) is not int:
+        total_loss.backward()
+        #loss.backward()
+        optimizer.step()
+        optimizer.zero_grad()
+    return total_loss, num_violations
