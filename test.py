@@ -21,7 +21,7 @@ device = (
 
 num_traj = 100
 training_loops_per_run = 10
-max_runs = 100 
+max_runs = 1000 
 max_eps = 0.1
 TimeOut = 120
 empirical_samples = 1000
@@ -37,20 +37,26 @@ trajectories = data
 #net = networks.structural_lyapunov().to(device)
 net = networks.test_NN().to(device)
 #vals = []
-weights = np.copy(net.forward_stack[0].weight.detach().numpy()) 
-tol = 1e-4
+tol = 1e-7
+old_loss = np.inf
+tau=0.5
 for i in range(max_runs):
     for k in tqdm(range(training_loops_per_run)):
-        trainer.train_lyap(trajectories, net, device)           #start_time = time.perf_counter()
-    new_weights = np.copy(net.forward_stack[0].weight.detach().numpy())
+        new_loss, num_violations = trainer.train_lyap(trajectories, net, device, tau)           #start_time = time.perf_counter()
+    tau /= 2
+    print(new_loss)
+    print(num_violations)
     eps = verifier.verify_lyap(trajectories, net, device, beta) #while time.perf_counter() - start_time < TimeOut:
     print("Epsilon in loop {}: {:.5f}".format(i, eps))
-    if np.linalg.norm(weights-new_weights) <= tol:
+    if type(new_loss) is not int:
+        new_loss = new_loss.detach().numpy()
+    print(np.abs(new_loss-old_loss))
+    if np.abs(new_loss-old_loss) <= tol:
         break
     else:
-        print(np.linalg.norm(weights-new_weights))
-        weights = np.copy(new_weights)
-    #vals.append(val)
+        old_loss = np.copy(new_loss)
+        
+        #vals.append(val)
          #trajectories = []
 #print(vals)
 

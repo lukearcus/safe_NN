@@ -13,10 +13,10 @@ def get_simple_test():
 
     A_mat =  np.matrix([[-R/L, -Kb/L],[Km/J, -Kf/J]])
 
-    init_mean = np.ones(2)
+    init_mean = 5*np.ones(2)
     init_cov = np.eye(2)
     init_dist = scipy.stats.multivariate_normal(init_mean, init_cov).rvs
-    traj_length = 1 
+    traj_length = 22 
 
     return systems.uncontrolled_LTI(A_mat, init_dist, traj_length)
 

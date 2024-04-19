@@ -19,7 +19,7 @@ def MC_test_lyap(num_samples, network, device, model):
         pred_0 = network(torch.zeros_like(state))
         pred_V_deriv = network.get_deriv(state,deriv) 
         
-        if any(pred_V-pred_0 < 0) or any(pred_V_deriv > 0):
+        if any(pred_V-pred_0 <= 0) or any(pred_V_deriv >= 0):
             num_violations += 1
     return num_violations/num_samples, converge_violations/num_samples
 
@@ -38,7 +38,7 @@ def MC_test_disc_lyap(num_samples, network, device, model):
         pred_0 = network(torch.zeros_like(state))
         pred_V_deriv = network(next_s) - pred_V 
         
-        if any(pred_V-pred_0 < 0) or any(pred_V_deriv > 0):
+        if any(pred_V-pred_0 <= 0) or any(pred_V_deriv >= 0):
             num_violations += 1
     return num_violations/num_samples, converge_violations/num_samples
 
@@ -54,7 +54,7 @@ def verify_lyap(data, network, device, beta):
         pred_V = network(state)
         pred_V_deriv = network.get_deriv(state,deriv) 
         
-        if any(pred_V - pred_0 <= 0) or any(pred_V_deriv > 0):
+        if any(pred_V <= pred_0 ) or any(pred_V_deriv >= 0):
             num_violations += 1
         #else:
             #print(batch)
