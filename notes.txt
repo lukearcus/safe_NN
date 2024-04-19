@@ -3,3 +3,5 @@ Next steps: start work on barrier certificates which should offer an easier prob
 Structutal one would be better with a quadratic output layer, but need to implement this manually...
 
 Lyapunov struggles when init mean is 0, some trajectories presumably getting very close to origin
+
+Next steps: Barrier certificates

@@ -33,7 +33,7 @@ with open("disc_trajectory_data.pkl", 'rb') as f:
 trajectories = data
 #import pdb; pdb.set_trace() #test repeatability, works as intended!
 #trajectories = trajectories[1:]
-net = networks.structural_lyapunov().to(device)
+net = networks.test_NN().to(device)
 for k in tqdm(range(training_loops_per_run)):
     trainer.train_disc_lyap(trajectories, net, device)           #start_time = time.perf_counter()
                                                             #trajectories = []
